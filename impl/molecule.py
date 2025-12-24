@@ -33,7 +33,7 @@ class Molecule(metaclass=ABCMeta):
 class Soap:
     def __init__(self, rng=None, dir=None):
         if rng:
-            self.dir = rng.choice(7, size=1)
+            self.dir = rng.choice(8, size=1)
         elif dir:
             self.dir = dir
         else:
@@ -90,7 +90,7 @@ class MCMCUtl:
         
 
     def try_local_swap(self, neighbor, temp_scale, rng):
-        may_swap_indicator = rng.choice(7, size=1)
+        may_swap_indicator = rng.choice(8, size=1)
         d_idx = [[-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]][may_swap_indicator]
         may_swap_idx = [2+d_idx[0], 2+d_idx[1]]
         original_encoded, may_swap_encoded = neighbor[2, 2], neighbor[may_swap_idx[0], may_swap_idx[1]]
