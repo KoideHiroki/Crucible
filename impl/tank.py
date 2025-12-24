@@ -3,22 +3,23 @@ import random
 from molecule import Soap, Water, Air, MCMCUtl
 
 class Tank:
-    def __init__(self, soap_raio, water_ratio, temp_scale, tank_size=100, seed=0, ):
-        assert soap_raio+water_ratio <= 1.0
+    def __init__(self, soap_ratio, water_ratio, temp_scale, tank_size=100, seed=0, ):
+        assert soap_ratio+water_ratio <= 1.0
         self.rng = np.random.default_rng(seed)
         self.temp_scale = temp_scale
         self.tank_size = tank_size
-        self.mols = self.init_mols(soap_raio, water_ratio)
+        self.mols = self.init_mols(soap_ratio, water_ratio)
 
-    def init_mols(self, soap_raio, water_ratio):
-        soap_num = int(self.tank_size*self.tank_size*soap_raio)
-        water_num = int(self.tank_size*self.tank_size*water_raio)
+    def init_mols(self, soap_ratio, water_ratio):
+        soap_num = int(self.tank_size*self.tank_size*soap_ratio)
+        water_num = int(self.tank_size*self.tank_size*water_ratio)
         soaps = [Soap(rng=self.rng) for _ in range(soap_num)]
         waters = [Water() for _ in range(water_num)]
         airs = [Air() for _ in range(self.tank_size*self.tank_size-(soap_num+water_num))]
-        mols = random.sample(soaps + waters + airs)
+        mols = soaps + waters + airs
+        ramdom.shuffle(mols)
         mols = np.asarray([m.encode() for m in mols])
-        mols = mols.resize(self.tank_size, self.tank_size, 2)
+        mols = mols.reshape(self.tank_size, self.tank_size, 2)
         #print(mols.shape)
         return mols
 

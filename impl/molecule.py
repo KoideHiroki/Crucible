@@ -41,21 +41,21 @@ class Soap:
             sys.exit()
 
     def encode(self):
-        return [SoapKind, self.dir]
+        return [MoleculeKind.SoapKind, self.dir]
 
     def calc_self_energy(self, neighbor):
         pass
 
 class Water:
     def encode(self):
-        return [WaterKind, -1]
+        return [MoleculeKind.WaterKind, -1]
 
     def calc_self_energy(self, neighbor):
         pass
 
 class Air:
     def encode(self):
-        return [AirKind, -1]
+        return [MoleculeKind.AirKind, -1]
 
     def calc_self_energy(self, neighbor):
         pass
@@ -67,11 +67,11 @@ Molecule.register(Air)
 class MCMCUtl:
     def decode(self, encoded):
         match encoded[0]:
-            case SoapKind:
+            case MoleculeKind.SoapKind:
                 return Soap(dir=encoded[1])
-            case WaterKind:
+            case MoleculeKind.WaterKind:
                 return Water()
-            case AirKind:
+            case MoleculeKind.AirKind:
                 return Air()
             case _:
                 print("invalid decode.")
@@ -94,7 +94,7 @@ class MCMCUtl:
         d_idx = [[-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]][may_swap_indicator]
         may_swap_idx = [2+d_idx[0], 2+d_idx[1]]
         original_encoded, may_swap_encoded = neighbor[2, 2], neighbor[may_swap_idx[0], may_swap_idx[1]]
-        may_swap_neighbor = neighbor
+        may_swap_neighbor = neighbor.copy()
         may_swap_neighbor[2, 2] = may_swap_encoded
         may_swap_neighbor[may_swap_idx[0], may_swap_idx[1]] = original_encoded
         original_energy = self.calc_neighbor_energy(neighbor)
