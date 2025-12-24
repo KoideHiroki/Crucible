@@ -1,18 +1,19 @@
 import numpy as np
 import random
-from molecule import Soap, Water, Air, try_local_swap
+from molecule import Soap, Water, Air, MCMCUtl
 
 class Tank:
-    def __init__(self, soap_raio, water_ratio, tank_size=100, seed=0, ):
+    def __init__(self, soap_raio, water_ratio, temp_scale, tank_size=100, seed=0, ):
         assert soap_raio+water_ratio <= 1.0
         self.rng = np.random.default_rng(seed)
+        self.temp_scale = temp_scale
         self.tank_size = tank_size
         self.mols = self.init_mols(soap_raio, water_ratio)
 
     def init_mols(self, soap_raio, water_ratio):
         soap_num = int(self.tank_size*self.tank_size*soap_raio)
         water_num = int(self.tank_size*self.tank_size*water_raio)
-        soaps = [Soap(self.rng) for _ in range(soap_num)]
+        soaps = [Soap(rng=self.rng) for _ in range(soap_num)]
         waters = [Water() for _ in range(water_num)]
         airs = [Air() for _ in range(self.tank_size*self.tank_size-(soap_num+water_num))]
         mols = random.sample(soaps + waters + airs)
@@ -35,7 +36,7 @@ class Tank:
     def try_swap(self, row_idx, col_idx):
         neighbor = self.get_neighbor(row_idx, col_idx)
         #print(neighbor.shape)
-        new_neighbor = try_local_swap(neighbor)
+        new_neighbor = MCMCUtl.try_local_swap(neighbor, self.temp_scale, self.rng)
         self.embed_neighbor(new_neighbor, row_idx, col_idx)
 
     def get_neighbor(self, row_idx, col_idx):
