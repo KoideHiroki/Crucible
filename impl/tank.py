@@ -42,7 +42,11 @@ class Tank:
         self.embed_neighbor(new_neighbor, row_idx, col_idx)
 
     def get_neighbor(self, row_idx, col_idx):
-        return self.mols[row_idx-2:row_idx+2+1, col_idx-2:col_idx+2+1, :]
-    
+        idx = [(row_idx + di) % self.tank_size for di in range(-2, 3)]
+        jdx = [(col_idx + dj) % self.tank_size for dj in range(-2, 3)]
+        return self.mols[np.ix_(idx, jdx, [0, 1])]
+ 
     def embed_neighbor(self, new_neighbor, row_idx, col_idx):
-        self.mols[row_idx-2:row_idx+2+1, col_idx-2:col_idx+2+1, :] = new_neighbor
+        idx = [(row_idx + di) % self.tank_size for di in range(-2, 3)]
+        jdx = [(col_idx + dj) % self.tank_size for dj in range(-2, 3)]
+        self.mols[np.ix_(idx, jdx, [0, 1])] = new_neighbor
