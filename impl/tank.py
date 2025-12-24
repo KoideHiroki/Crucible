@@ -17,7 +17,7 @@ class Tank:
         waters = [Water() for _ in range(water_num)]
         airs = [Air() for _ in range(self.tank_size*self.tank_size-(soap_num+water_num))]
         mols = soaps + waters + airs
-        ramdom.shuffle(mols)
+        random.shuffle(mols)
         mols = np.asarray([m.encode() for m in mols])
         mols = mols.reshape(self.tank_size, self.tank_size, 2)
         #print(mols.shape)
@@ -37,7 +37,8 @@ class Tank:
     def try_swap(self, row_idx, col_idx):
         neighbor = self.get_neighbor(row_idx, col_idx)
         #print(neighbor.shape)
-        new_neighbor = MCMCUtl.try_local_swap(neighbor, self.temp_scale, self.rng)
+        mcmc_utl = MCMCUtl()
+        new_neighbor = mcmc_utl.try_local_swap(neighbor, self.temp_scale, self.rng)
         self.embed_neighbor(new_neighbor, row_idx, col_idx)
 
     def get_neighbor(self, row_idx, col_idx):
