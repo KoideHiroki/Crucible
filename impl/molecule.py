@@ -62,24 +62,72 @@ class InteractionHelpers:
             return self.lec.E_sshi
         else:
             return self.lec.E_ssn
+    """
+    以下、is_xxx~~~~は「その相互作用に当てはまるかどうか」でboolを返す。
+        xsc
+        x(AirかWater)のpos(0~7)方向にSoapがあるとき、soap.dir(0~7)がxの方向を向いているか
+        xsh
+        xのpos方向にSoapがあるとき、soap.dirの反対がxの方向にあるか
+        xsn
+        xのpos方向にSoapがあるとき、xscでもxshでもないとき
+        sspa
+        soapのpos方向にother_soapがあるとき、soap.dirとother_soap.dirがposの相対角度を考慮して45°違いになっているとき
+        ssta
+        soapのpos方向にother_soapがあるとき、soap.dirとother_soap.dirがposの相対角度を考慮して同じ向きになっているとき
+        sshi
+        soapのpos方向にother_soapがあるとき、sspaでもsstaでもなく、soap.dirとother_soap.dirがposの相対角度を考慮して同じ格子を指しているとき
+    """
+    def _ang_diff8(self, a: int, b: int) -> int:
+        """8方向(0..7)の最小角差(0..4)を返す"""
+        d = (a - b) % 8
+        return min(d, 8 - d)
 
-    def is_xsc_interaction(self, sope, pos):
-        pass
+    def is_xsc_interaction(self, soap, pos):
+            """
+            x(Air/Water)のpos方向にSoapがあるとき、
+            soap.dirがxの方向(= soap→x)を向いているか。
+            ここで pos は x→soap なので、soap→x は (pos+4)%8
+            """
+            toward_x = (pos + 4) % 8
+            return soap.dir == toward_x
 
     def is_xsh_interaction(self, soap, pos):
-        pass
+            """
+            x→soap が pos のとき、soap.dir の反対(=soap.dir+4)が x 方向(soap→x)か。
+            (soap.dir+4)==(pos+4) ⇔ soap.dir==pos
+            """
+            return soap.dir == (pos % 8)
 
     def is_xsn_interaction(self, soap, pos):
-        pass
+        return not self.is_xsc_interaction(soap, pos) and not self.is_xsh_interaction(soap, pos)
 
-    def is_sspa_interaction(self, soap, other_sope, pos):
-        pass
+    def is_sspa_interaction(self, soap, other_soap, pos):
+            """
+            soapのpos方向にother_soapがあるとき、
+            soap.dir と other_soap.dir が 45°違い(±1)になっているか。
+            """
+            return self._ang_diff8(soap.dir, other_soap.dir) == 1
+            
+    def is_ssta_interaction(self, soap, other_soap, pos):
+            """
+            soapのpos方向にother_soapがあるとき、
+            soap.dir と other_soap.dir が同じ向きか。
+            """
+            return self._ang_diff8(soap.dir, other_soap.dir) == 0
 
-    def is_ssta_interaction(self, soap, other_sope, pos):
-        pass
+    def is_sshi_interaction(self, soap, other_soap, pos):
+            """
+            sspaでもsstaでもないが、
+            pos方向(soap→other)の同一直線上(= pos or pos+4)を両者が指しているか。
+            つまり「互いに反対向きで同じ格子線(ボンド)を指す」ケースを拾う。
+            """
+            if self.is_sspa_interaction(soap, other_soap, pos):
+                return False
+            if self.is_ssta_interaction(soap, other_soap, pos):
+                return False
 
-    def is_sshi_interaction(self, soap, other_sope, pos):
-        pass
+            axis_a = {pos % 8, (pos + 4) % 8}
+            return (soap.dir in axis_a) and (other_soap.dir in axis_a)
 
 class MoleculeKind(Enum):
     SoapKind = 1
