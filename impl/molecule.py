@@ -13,19 +13,19 @@ def find_dir(pos):
 
 @dataclasses.dataclass(frozen=True)
 class LocalEnergyConstant:
-    E_aa: float
-    E_ww: float
-    E_aw: float
-    E_asc: float
-    E_ash: float
-    E_asn: float
-    E_wsc: float
-    E_wsh: float
-    E_wsn: float
-    E_sspa: float
-    E_ssta: float
-    E_sshi: float
-    E_ssn: float
+    E_aa: float = 0.0
+    E_ww: float = -1.0
+    E_aw: float = 1.0
+    E_asc: float = -1.2
+    E_ash: float = 1.0
+    E_asn: float = -0.2
+    E_wsc: float = 1.0
+    E_wsh: float = -1.2
+    E_wsn: float = -0.2
+    E_sspa: float = -0.5
+    E_ssta: float = -1.5
+    E_sshi: float = -1.0
+    E_ssn: float = 0.0
 
 class InteractionHelpers:
     def __init__(self):
