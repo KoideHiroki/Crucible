@@ -4,13 +4,12 @@ import sys
 import dataclasses
 import numpy as np
 
-dirctions = [[-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]]
-dirctions_normal = [np.asarray(d)/np.linalg.norm(d) for d in dirctions]
+directions = [[-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]]
 def find_dir(pos):
     ret = pos.copy()
     ret[0] = ret[0] - 1
     ret[1] = ret[1] - 1
-    return dirctions.index(ret)
+    return directions.index(ret)
 
 @dataclasses.dataclass(frozen=True)
 class LocalEnergyConstant:
@@ -116,18 +115,15 @@ class InteractionHelpers:
             return self._ang_diff8(soap.dir, other_soap.dir) == 0
 
     def is_sshi_interaction(self, soap, other_soap, pos):
-            """
-            sspaでもsstaでもないが、
-            pos方向(soap→other)の同一直線上(= pos or pos+4)を両者が指しているか。
-            つまり「互いに反対向きで同じ格子線(ボンド)を指す」ケースを拾う。
-            """
-            if self.is_sspa_interaction(soap, other_soap, pos):
-                return False
-            if self.is_ssta_interaction(soap, other_soap, pos):
-                return False
+        """
+        soapのpos方向にother_soapがあるとき、
+        2粒子を結ぶ格子軸(pos, pos+4)を
+        両者が「どの角度でも」指していれば True。
 
-            axis_a = {pos % 8, (pos + 4) % 8}
-            return (soap.dir in axis_a) and (other_soap.dir in axis_a)
+        反対向き・45°・90°すべて含める。
+        """
+        axis = {pos % 8, (pos + 4) % 8}
+        return (soap.dir in axis) and (other_soap.dir in axis)
 
 class MoleculeKind(Enum):
     SoapKind = 1
@@ -255,7 +251,7 @@ class MCMCUtl:
 
     def try_local_swap(self, neighbor, temp_scale, rng):
         may_swap_indicator = rng.choice(8)
-        d_idx = dirctions[may_swap_indicator]
+        d_idx = directions[may_swap_indicator]
         may_swap_idx = [2+d_idx[0], 2+d_idx[1]]
         original_encoded, may_swap_encoded = neighbor[2, 2], neighbor[may_swap_idx[0], may_swap_idx[1]]
         may_swap_neighbor = neighbor.copy()
