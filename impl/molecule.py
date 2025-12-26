@@ -7,9 +7,10 @@ import numpy as np
 dirctions = [[-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]]
 dirctions_normal = [np.asarray(d)/np.linalg.norm(d) for d in dirctions]
 def find_dir(pos):
-    pos[0] = pos[0] - 1
-    pos[1] = pos[1] - 1
-    return dirctions.index(pos)
+    ret = pos.copy()
+    ret[0] = ret[0] - 1
+    ret[1] = ret[1] - 1
+    return dirctions.index(ret)
 
 @dataclasses.dataclass(frozen=True)
 class LocalEnergyConstant:
@@ -28,37 +29,39 @@ class LocalEnergyConstant:
     E_ssn: float
 
 class InteractionHelpers:
+    def __init__(self):
+        self.lec = LocalEnergyConstant()
     def as_interaction_energy(self, soap, pos):
         if self.is_xsc_interaction(soap, pos):
-            return LocalEnergyConstant.E_asc
+            return self.lec.E_asc
         elif self.is_xsh_interaction(soap, pos):
-            return LocalEnergyConstant.E_ash
+            return self.lec.E_ash
         elif self.is_xsn_interaction(soap, pos):
-            return LocalEnergyConstant.E_asn
+            return self.lec.E_asn
         else:
             print("invalid Air-Soap interaction.")
             sys.exit()
 
     def ws_interaction_energy(self, soap, pos):
         if self.is_xsc_interaction(soap, pos):
-            return LocalEnergyConstant.E_wsc
+            return self.lec.E_wsc
         elif self.is_xsh_interaction(soap, pos):
-            return LocalEnergyConstant.E_wsh
+            return self.lec.E_wsh
         elif self.is_xsn_interaction(soap, pos):
-            return LocalEnergyConstant.E_wsn
+            return self.lec.E_wsn
         else:
             print("invalid Water-Soap interaction.")
             sys.exit()
 
     def ss_interaction_energy(self, soap, other_soap, pos):
         if self.is_sspa_interaction(soap, other_soap, pos):
-            return LocalEnergyConstant.E_sspa
+            return self.lec.E_sspa
         elif self.is_ssta_interaction(soap, other_soap, pos):
-            return LocalEnergyConstant.E_ssta
+            return self.lec.E_ssta
         elif self.is_sshi_interaction(soap, other_soap, pos):
-            return LocalEnergyConstant.E_sshi
+            return self.lec.E_sshi
         else:
-            return LocalEnergyConstant.E_ssn
+            return self.lec.E_ssn
 
     def is_xsc_interaction(self, sope, pos):
         pass
@@ -94,7 +97,7 @@ class Molecule(metaclass=ABCMeta):
 class Soap:
     def __init__(self, rng=None, dir=None):
         if rng:
-            self.dir = rng.choice(8, size=1)
+            self.dir = rng.choice(8)
         elif dir:
             self.dir = dir
         else:
@@ -105,10 +108,13 @@ class Soap:
         return [MoleculeKind.SoapKind, self.dir]
 
     def calc_self_energy(self, neighbor):
+        energy = 0.0
         mcmc_utl = MCMCUtl()
         interaction_helpers = InteractionHelpers()
         for row_idx in range(0, 3):
             for col_idx in range(0, 3):
+                if row_idx == 1 and col_idx == 1:
+                    continue
                 ngb = neighbor[row_idx, col_idx]
                 pos = find_dir([row_idx, col_idx])
                 match ngb[0]:
@@ -130,12 +136,14 @@ class Water:
 
         for row_idx in range(0, 3):
             for col_idx in range(0, 3):
+                if row_idx == 1 and col_idx == 1:
+                    continue
                 ngb = neighbor[row_idx, col_idx]
                 match ngb[0]:
                     case MoleculeKind.WaterKind:
-                        energy = energy + LocalEnergyConstant.E_ww
+                        energy = energy + self.lec.E_ww
                     case MoleculeKind.AirKind:
-                        energy = energy + LocalEnergyConstant.E_aw
+                        energy = energy + self.lec.E_aw
                     case MoleculeKind.SoapKind:
                         mcmc_utl = MCMCUtl()
                         soap = mcmc_utl.decode(ngb)
@@ -152,12 +160,14 @@ class Air:
         energy = 0.0
         for row_idx in range(0, 3):
             for col_idx in range(0, 3):
+                if row_idx == 1 and col_idx == 1:
+                    continue
                 ngb = neighbor[row_idx, col_idx]
                 match ngb[0]:
                     case MoleculeKind.WaterKind:
-                        energy = energy + LocalEnergyConstant.E_ww
+                        energy = energy + self.lec.E_ww
                     case MoleculeKind.AirKind:
-                        energy = energy + LocalEnergyConstant.E_aw
+                        energy = energy + self.lec.E_aw
                     case MoleculeKind.SoapKind:
                         mcmc_utl = MCMCUtl()
                         soap = mcmc_utl.decode(ngb)
@@ -196,7 +206,7 @@ class MCMCUtl:
         
 
     def try_local_swap(self, neighbor, temp_scale, rng):
-        may_swap_indicator = rng.choice(8, size=1)
+        may_swap_indicator = rng.choice(8)
         d_idx = dirctions[may_swap_indicator]
         may_swap_idx = [2+d_idx[0], 2+d_idx[1]]
         original_encoded, may_swap_encoded = neighbor[2, 2], neighbor[may_swap_idx[0], may_swap_idx[1]]
