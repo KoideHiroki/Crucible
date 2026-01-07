@@ -174,12 +174,6 @@ class InteractionHelpers:
         axis = {pos % 8, (pos + 4) % 8}
         return (soap.dir in axis) and (other_soap.dir in axis)
 
-    #def is_sscurv_interaction(self, soap, other_soap, pos: int, tol: int = 1) -> bool:
-    #    toward_other = pos % 8
-    #    toward_self  = (pos + 4) % 8
-    #    return (self._ang_diff8(soap.dir, toward_other) <= tol) and \
-    #        (self._ang_diff8(other_soap.dir, toward_self) <= tol)
-
     def is_sscurv_interaction(self, soap, other_soap, pos):
         toward_other = pos % 8
         toward_self  = (pos + 4) % 8
@@ -391,7 +385,6 @@ class MCMCUtl:
         proposal = neighbor7.copy()
 
         cur_dir = int(original[center[0], center[1]][1])
-        # ちょい回し（±1）か、たまに大回転も入れたいなら choices 変えてOK
         diff = rng.choice([-1, 1])
         new_dir = (cur_dir + diff) % 8
         proposal[center[0], center[1]][1] = new_dir

@@ -31,8 +31,8 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 #    tank = Tank(soap_ratio, water_ratio, cold_tmp, tank_size=tank_size, seed=2*loop_idx+1, restart=restart)
 #    tank.run(cold_step_num+1, "loop{}_cold".format(loop_idx), save_step_num)
 
-#tank = Tank(0.3, 0.35, 1000.0, tank_size=50)
-#tank.run(1001, "isa_first", 100)
+#tank = Tank(0.3, 0.35, 0.1, tank_size=120)
+#tank.run(1001, "exe", 10)
 #restart = np.load("./log/isa_first_step_100.npy")
 #tank = Tank(0.3, 0.35, 1.0, tank_size=50, restart=restart)
 #tank.run(1001, "isa_second", 100)
@@ -57,35 +57,24 @@ DIR8 = np.array([[-1, -1], [-1, 0], [-1, 1],
 SOAP, WATER, AIR = 1, 2, 3
 
 def plot_lattice_with_soap_arrows(step, every=1, arrow_scale=0.6, origin="lower"):
-    """
-    step: (H,W,2) で step[...,0]=kind, step[...,1]=dir
-    every: 間引き（重い/見づらい時に 2,3...）
-    """
     kind = step[..., 0].astype(int)
     d = step[..., 1].astype(int)
 
     H, W = kind.shape
     yy, xx = np.mgrid[0:H, 0:W]
 
-    # soap だけ
     m = (kind == SOAP)
 
-    # 間引き
     if every > 1:
         m = m & ((yy % every == 0) & (xx % every == 0))
 
-    # quiver 用の成分
     dx = DIR8[d, 1]
     dy = DIR8[d, 0]
 
     U = np.where(m, dx, np.nan)
     V = np.where(m, dy, np.nan)
-    #V = -V  # imshow 座標補正
 
-    # === ここが色指定の本体 ===
-    # index: 0は未使用（ダミー）
     cmap = ListedColormap([
-        "black",        # 0 (unused)
         "orange",       # 1 = SOAP
         "#7ec8e3",       # 2 = WATER (水色)
         "#b0b0b0",       # 3 = AIR (灰色)
@@ -110,46 +99,5 @@ def plot_lattice_with_soap_arrows(step, every=1, arrow_scale=0.6, origin="lower"
     plt.tight_layout()
     plt.show()
 
-#def plot_lattice_with_soap_arrows(step, every=1, arrow_scale=0.6, origin="lower"):
-#    """
-#    step: (H,W,2) で step[...,0]=kind, step[...,1]=dir
-#    every: 間引き（重い/見づらい時に 2,3...）
-#    """
-#    kind = step[..., 0].astype(int)
-#    d = step[..., 1].astype(int)
-#
-#    H, W = kind.shape
-#    yy, xx = np.mgrid[0:H, 0:W]
-#
-#    # soap だけ
-#    m = (kind == SOAP)
-#
-#    # 間引き
-#    if every > 1:
-#        m = m & ((yy % every == 0) & (xx % every == 0))
-#
-#    # quiver 用の成分（imshow座標に合わせる）
-#    # DIR8 は (drow, dcol) = (dy, dx) なので
-#    # U=dx, V=dy に入れる。ただし origin="lower" ならそのままでOK。
-#    dx = DIR8[d, 1]
-#    dy = DIR8[d, 0]
-#
-#    U = np.where(m, dx, np.nan)
-#    V = np.where(m, dy, np.nan)
-#    V = -V
-#
-#    plt.figure(figsize=(6, 6))
-#    plt.imshow(kind, cmap="viridis", origin=origin)
-#    plt.colorbar(label="kind (Soap=1, Water=2, Air=3)")
-#    plt.quiver(xx, yy, U, V,
-#               angles="xy", scale_units="xy", scale=1/arrow_scale,
-#               width=0.006, headwidth=3.5, headlength=4.5, facecolor="red")
-#    plt.axis("off")
-#    plt.tight_layout()
-#    plt.show()
-
-
-# 例:
-#for i in range(0, 51, 10):
-step = np.load("./log/loop44_cold_step_{}.npy".format(100))   # (H,W,2)
+step = np.load("./log/exe_step_{}.npy".format(0))   # (H,W,2)
 plot_lattice_with_soap_arrows(step, every=1, arrow_scale=1.5)

@@ -37,7 +37,6 @@ class Tank:
         self.rng.shuffle(mols)
         mols = np.asarray([m.encode() for m in mols])
         mols = mols.reshape(self.tank_size, self.tank_size, 2)
-        #print(mols.shape)
         return mols
 
     def run(self, loop_num, out_prefix, save_step_num):
@@ -55,7 +54,6 @@ class Tank:
 
     def try_swap(self, row_idx, col_idx):
         neighbor = self.get_neighbor(row_idx, col_idx)
-        #print(neighbor.shape)
         mcmc_utl = MCMCUtl()
         new_neighbor = mcmc_utl.try_local_swap(neighbor, self.temp_scale, self.rng)
         self.embed_neighbor(new_neighbor, row_idx, col_idx)
@@ -65,11 +63,8 @@ class Tank:
         neighbor = self.get_neighbor_7x7(row_idx, col_idx)
         mcmc_utl = MCMCUtl()
 
-        # まず並進swap
         new_neighbor = mcmc_utl.try_local_swap_7x7(neighbor, self.temp_scale, self.rng)
 
-        # 次に回転（回転は毎回でもいいし、確率で間引いてもOK）
-        # 例：毎回回す
         new_neighbor = mcmc_utl.try_local_rotate_7x7(new_neighbor, self.temp_scale, self.rng)
 
         self.embed_neighbor_7x7(new_neighbor, row_idx, col_idx)
