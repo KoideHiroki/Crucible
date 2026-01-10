@@ -7,7 +7,7 @@
 
 [movie.mp4](https://private-user-images.githubusercontent.com/251115363/532700267-8583112b-4d3f-407e-8bea-43244e1dc05a.mp4?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Njc3Njk0NDAsIm5iZiI6MTc2Nzc2OTE0MCwicGF0aCI6Ii8yNTExMTUzNjMvNTMyNzAwMjY3LTg1ODMxMTJiLTRkM2YtNDA3ZS04YmVhLTQzMjQ0ZTFkYzA1YS5tcDQ_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwMTA3JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDEwN1QwNjU5MDBaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT01ODlmMGY2M2RiYmFhYzBlMTQzNWZhNmZiYzEwOThkMmExOWFiMWMyMTUwNmZkYmQ4NDZmODBmNDU0Mzg4Yzg1JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.k4Ylpw7wc8uZWISFCoZfe_od6dgwzzJDOa5HE4xgnLI)
 
-[step_0.png](https://github.com/user-attachments/assets/ce7466dd-4423-462f-a858-9d58b8079a04)
+<img width="4000" height="4000" alt="Image" src="https://github.com/user-attachments/assets/ce7466dd-4423-462f-a858-9d58b8079a04">
 
 [step_1000.png](https://github.com/user-attachments/assets/8399e306-7052-4680-8a76-082713fa5dea)
 
